@@ -1,0 +1,31 @@
+{
+  "urls": [
+    {
+      "url": "kayak.com",
+      "prefix": "www.",
+      "suffix": "/flights/",
+      "pattern": "%from%-%to%/%fromDate%/%toDate%",
+      "firstLevelSplitter": "/",
+      "secondLevelSplitter": "-",
+      "datePattern": "YYYY-MM-DD"
+    },
+    {
+      "url": "agoda.com",
+      "prefix": "flights.",
+      "suffix": "/flights/",
+      "pattern": "%from%-%to%/%fromDate%/%toDate%",
+      "firstLevelSplitter": "/",
+      "secondLevelSplitter": "-",
+      "datePattern": "YYYY-MM-DD"
+    },
+    {
+      "url": "priceline.com",
+      "prefix": "www.",
+      "suffix": "/m/fly/search/",
+      "pattern": "%from%-%to%-%fromDate%/%to%-%from%-%toDate%",
+      "firstLevelSplitter": "/",
+      "secondLevelSplitter": "-",
+      "datePattern": "YYYYMMDD"
+    }
+  ]
+}

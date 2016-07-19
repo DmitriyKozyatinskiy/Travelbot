@@ -1,0 +1,46 @@
+<form class="form-inline" id="js-search-form">
+  <fieldset>
+    <legend>Enter new search</legend>
+    <div class="form-group">
+      <label class="radio-inline">
+        <input type="radio" name="search-type" class="js-search-type" id="js-search-one-way" value="1">One-way
+      </label>
+      <label class="radio-inline">
+        <input type="radio" name="search-type" class="js-search-type" id="js-search-two-way" value="2" checked>Two-way
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="sr-only" for="js-search-from">From</label>
+      <div class="input-group">
+        <div class="input-group-addon">
+          <img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-from-loader">
+        </div>
+        <input class="form-control js-search-code-input" id="js-search-from" placeholder="From" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="sr-only" for="js-search-to">To</label>
+      <div class="input-group">
+        <div class="input-group-addon">
+          <img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-to-loader">
+        </div>
+        <input class="form-control js-search-code-input" id="js-search-to" placeholder="To" required>
+      </div>
+    </div>
+    <div class="row search-dates-container">
+      <div class="col-xs-6">
+        <label class="sr-only" for="js-search-from-date">From date</label>
+        <input class="form-control" id="js-search-from-date" data-provide="datepicker" placeholder="From date" required>
+      </div>
+      <div class="col-xs-6">
+        <label class="sr-only" for="js-search-to-date">To date</label>
+        <input class="form-control col-xs-3" id="js-search-to-date" data-provide="datepicker" placeholder="To date">
+      </div>
+    </div>
+    <div class="row search-submit-container pull-right">
+      <div class="col-xs-12">
+        <button type="submit" class="btn btn-primary" id="js-search-submit">Search</button>
+      </div>
+    </div>
+  </fieldset>
+</form>

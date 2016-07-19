@@ -1,0 +1,44 @@
+body {
+    width: 400px;
+    height: auto;
+    margin-top: 1em;
+}
+
+main {
+    min-height: 100px;
+}
+
+.search-submit-container, .search-dates-container {
+    margin-top: 10px;
+}
+
+.js-search-spinner {
+    height: 20px;
+}
+
+.flight-list {
+    padding-left: 10px;
+    max-height: 260px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#js-flight-list-container {
+
+}
+
+.flight-list-icon {
+    padding-top: 11px;
+}
+
+#js-search-form-container {
+    margin-top: 30px;
+}
+
+.no-events {
+    pointer-events: none;
+}
+
+#js-search-submit {
+    margin-bottom: 10px;
+}

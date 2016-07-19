@@ -1,0 +1,31 @@
+<legend>Recent flight searches</legend>
+<!--<ul class="flight-list">-->
+  <!--{{ #flights }}-->
+  <!--<li class="list-unstyled row">-->
+    <!--<div class="col-xs-4">-->
+      <!---->
+
+    <!--</div>-->
+  <!--</li>-->
+  <!--{{ /flights }}-->
+<!--</ul>-->
+
+<ul class="flight-list">
+  {{ #flights }}
+    <li class="row js-flight-container">
+      <div class="col-xs-1 text-center">
+        <span class="glyphicon glyphicon-plane flight-list-icon" aria-hidden="true"></span>
+      </div>
+      <div class="col-xs-6">
+        <a href="{{ url }}" class="js-flight-list-url" target="_blank">
+          {{ codeString }}
+          <br>
+          {{ dateString }}
+        </a>
+      </div>
+      <div class="col-xs-4 text-right">
+        <span class="glyphicon glyphicon-remove flight-list-icon js-remove-flight-button" role="button" data-id="{{ id }}"></span>
+      </div>
+    </li>
+  {{ /flights }}
+</ul>
