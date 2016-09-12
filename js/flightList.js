@@ -7,13 +7,31 @@ var FlightList = (function() {
     var templateData = [];
 
     flights.forEach(function(flight) {
+      var url = UrlGenerator.generateFlightUrl(flight, currentUrl);
       var text = UrlGenerator.generateFlightText(flight, currentUrl);
-      templateData.push({
-        id: flight.id,
-        url: UrlGenerator.generateFlightUrl(flight, currentUrl),
-        codeString: text.codeString,
-        dateString: text.dateString
-      });
+      var flightData;
+
+      if (flight.type === 'hotel') {
+        flightData = {
+          id: flight.id,
+          codeString: text.codeString,
+          dateString: text.dateString,
+          location: flight.location,
+          startDate: flight.dates[0],
+          endDate: flight.dates[1],
+          isHotel: flight.isHotel
+        }
+      } else {
+        flightData = {
+          id: flight.id,
+          url: url,
+          codeString: text.codeString,
+          dateString: text.dateString,
+          isHotel: flight.isHotel
+        }
+      }
+
+      templateData.push(flightData);
     });
 
     return templateData;
@@ -36,7 +54,9 @@ var FlightList = (function() {
     var $button = $(this);
     var id = $button.attr('data-id');
     chrome.runtime.sendMessage({removeFlightById: id}, function(response) {
-      $button.closest('.js-flight-container').remove();
+      var $dataRow = $button.closest('.js-flight-container');
+      $dataRow.next('hr').remove();
+      $dataRow.remove();
     });
   }).on('click', '.js-flight-list-url', function(event){
     var $flightListButton = $(this);

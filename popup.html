@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Travelbot</title>
   <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/bootstrap-select.css" rel="stylesheet">
+  <link href="css/font-awesome.css" rel="stylesheet">
   <link href="css/jquery-ui.css" rel="stylesheet">
   <link href="css/datepicker.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
@@ -15,7 +17,15 @@
 <div id="js-spinner" class="spinner-container hidden"></div>
 
 <main class="container" id="js-main">
-  <!--<h4>Travelbot</h4>-->
+  <div class="clearfix">
+    <h4 class="text-bold pull-left"><strong>Travelbot</strong></h4>
+    <div id="js-switch-container" class="pull-right"></div>
+  </div>
+
+  <hr>
+  <legend>
+    <small class="text-muted">Last itininaries</small>
+  </legend>
   <div id="js-flight-list-container"></div>
   <div id="js-search-form-container"></div>
 </main>
@@ -26,6 +36,7 @@
 <script src="js/libs/mustache.js"></script>
 <script src="js/libs/moment.js"></script>
 <script src="js/libs/bootstrap.js"></script>
+<script src="js/libs/bootstrap-select.js"></script>
 <script src="js/libs/datepicker.js"></script>
 <script src="js/libs/spin.js"></script>
 <script src="js/spinner.js"></script>

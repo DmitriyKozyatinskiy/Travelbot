@@ -1,46 +1,72 @@
 <form class="form-inline" id="js-search-form">
   <fieldset>
-    <legend>Enter new search</legend>
-    <div class="form-group">
-      <label class="radio-inline">
-        <input type="radio" name="search-type" class="js-search-type" id="js-search-one-way" value="1">One-way
-      </label>
-      <label class="radio-inline">
-        <input type="radio" name="search-type" class="js-search-type" id="js-search-two-way" value="2" checked>Two-way
-      </label>
-    </div>
-    <div class="form-group">
-      <label class="sr-only" for="js-search-from">From</label>
-      <div class="input-group">
-        <div class="input-group-addon">
-          <img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-from-loader">
-        </div>
-        <input class="form-control js-search-code-input" id="js-search-from" placeholder="From" required>
+    <legend><small class="text-muted">Enter new search</small></legend>
+    <!--<div class="form-group">-->
+      <!--<label class="radio-inline">-->
+        <!--<input type="radio" name="search-type" class="js-search-type" id="js-search-one-way" value="1">One-way-->
+      <!--</label>-->
+      <!--<label class="radio-inline">-->
+        <!--<input type="radio" name="search-type" class="js-search-type" id="js-search-two-way" value="2" checked>Two-way-->
+      <!--</label>-->
+    <!--</div>-->
+    <!--<div class="row">-->
+      <!--<div class="col-xs-6">-->
+        <!--<label class="sr-only" for="js-search-from">From</label>-->
+        <!--<div class="input-group">-->
+          <!--<div class="input-group-addon js-input-spinner hidden">-->
+            <!--<img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-from-loader">-->
+          <!--</div>-->
+          <!--<input class="form-control js-search-code-input" id="js-search-from" placeholder="From" required>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="col-xs-6">-->
+        <!--<label class="sr-only" for="js-search-to">To</label>-->
+        <!--<div class="input-group">-->
+          <!--<div class="input-group-addon js-input-spinner hidden">-->
+            <!--<img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-to-loader">-->
+          <!--</div>-->
+          <!--<input class="form-control js-search-code-input" id="js-search-to" placeholder="To" required>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+    <div class="clearfix text-center">
+        <!--<div class="input-group-addon js-input-spinner hidden">-->
+          <!--<img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-from-loader">-->
+        <!--</div>-->
+      <select class="selectpicker search-type-select js-search-type-select" data-width="20%">
+        <option value="flights" data-content="<i class='fa fa-plane'></i>" selected></option>
+        <option value="hotels" data-content="<i class='fa fa-bed'></i>"></option>
+      </select>
+      <input class="form-control hotel-search-input js-search-hotel-input hidden" style="float: left;" id="js-hotel-search" placeholder="Where" required>
+      <div class="flight-search-inputs-container" id="js-flight-search-inputs-container">
+        <input class="form-control search-input js-search-code-input" style="float: left;" id="js-search-from" placeholder="From" required>
+        <span class="glyphicon glyphicon-menu-right" style="vertical-align: -webkit-baseline-middle; color: grey;"></span>
+
+        <!--<div class="input-group-addon js-input-spinner hidden">-->
+        <!--<img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-to-loader">-->
+        <!--</div>-->
+        <input class="form-control search-input js-search-code-input" style="float: right;" id="js-search-to" placeholder="To" required>
       </div>
     </div>
-    <div class="form-group">
-      <label class="sr-only" for="js-search-to">To</label>
-      <div class="input-group">
-        <div class="input-group-addon">
-          <img src="../img/spinner.svg" class="js-search-spinner hidden" id="js-search-to-loader">
-        </div>
-        <input class="form-control js-search-code-input" id="js-search-to" placeholder="To" required>
-      </div>
+
+
+    <div class="clearfix text-center dates-container">
+      <input class="form-control date-input" style="width: 43%; float: left;" id="js-search-from-date" placeholder="From date" required>
+      <span class="glyphicon glyphicon-minus" style="vertical-align: -webkit-baseline-middle; color: grey;"></span>
+      <input class="form-control col-xs-3 date-input" style="width: 43%; float: right;" id="js-search-to-date" placeholder="To date">
     </div>
-    <div class="row search-dates-container">
-      <div class="col-xs-6">
-        <label class="sr-only" for="js-search-from-date">From date</label>
-        <input class="form-control" id="js-search-from-date" data-provide="datepicker" placeholder="From date" required>
-      </div>
-      <div class="col-xs-6">
-        <label class="sr-only" for="js-search-to-date">To date</label>
-        <input class="form-control col-xs-3" id="js-search-to-date" data-provide="datepicker" placeholder="To date">
-      </div>
-    </div>
-    <div class="row search-submit-container pull-right">
-      <div class="col-xs-12">
-        <button type="submit" class="btn btn-primary" id="js-search-submit">Search</button>
-      </div>
+
+
+    <!--<div class="row search-dates-container">-->
+      <!--<div class="col-xs-6">-->
+        <!--<label class="sr-only" for="js-search-from-date">From date</label>-->
+      <!--</div>-->
+      <!--<div class="col-xs-6">-->
+        <!--<label class="sr-only" for="js-search-to-date">To date</label>-->
+      <!--</div>-->
+    <!--</div>-->
+    <div class="row search-submit-container text-center">
+      <button type="submit" class="btn btn-warning" id="js-search-submit">Search</button>
     </div>
   </fieldset>
 </form>

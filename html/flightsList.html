@@ -1,31 +1,22 @@
-<legend>Recent flight searches</legend>
-<!--<ul class="flight-list">-->
-  <!--{{ #flights }}-->
-  <!--<li class="list-unstyled row">-->
-    <!--<div class="col-xs-4">-->
-      <!---->
-
-    <!--</div>-->
-  <!--</li>-->
-  <!--{{ /flights }}-->
-<!--</ul>-->
-
-<ul class="flight-list">
+<div class="flight-list">
   {{ #flights }}
-    <li class="row js-flight-container">
+    <div class="row js-flight-container">
       <div class="col-xs-1 text-center">
-        <span class="glyphicon glyphicon-plane flight-list-icon" aria-hidden="true"></span>
+        <i class="{{ #isHotel }}fa fa-bed{{ /isHotel }}{{ ^isHotel }}fa fa-plane{{ /isHotel }} flight-list-icon flight-list-icon-type" aria-hidden="true"></i>
       </div>
       <div class="col-xs-6">
-        <a href="{{ url }}" class="js-flight-list-url" target="_blank">
+        <span class="js-flight-list-url">
           {{ codeString }}
           <br>
           {{ dateString }}
-        </a>
+        </span>
       </div>
       <div class="col-xs-4 text-right">
-        <span class="glyphicon glyphicon-remove flight-list-icon js-remove-flight-button" role="button" data-id="{{ id }}"></span>
+        <a href="#" class="glyphicon glyphicon-zoom-in text-muted flight-list-icon {{ #isHotel }}js-hotel-search-icon{{ /isHotel }}"
+           target="_blank" data-location="{{ location }}" data-start-date="{{ startDate }}" data-end-date="{{ endDate }}"></a>
+        <span class="glyphicon glyphicon-trash text-muted flight-list-icon js-remove-flight-button" role="button" data-id="{{ id }}"></span>
       </div>
-    </li>
+    </div>
+    <hr>
   {{ /flights }}
-</ul>
+</div>

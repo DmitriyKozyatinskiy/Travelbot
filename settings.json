@@ -2,12 +2,29 @@
   "urls": [
     {
       "url": "kayak.com",
-      "prefix": "www.",
-      "suffix": "/flights/",
-      "pattern": "%from%-%to%/%fromDate%/%toDate%",
-      "firstLevelSplitter": "/",
-      "secondLevelSplitter": "-",
-      "datePattern": "YYYY-MM-DD"
+      "flightUrl": "kayak.com/flights",
+      "datePattern": "YYYY-MM-DD",
+      "textDatePattern": "ddd M/DD",
+      "fromInput": "[name='origin']",
+      "toInput": "[name='destination']",
+      "startDateInput": ".Common-Widgets-DaterangePicker:visible [name='depart_date']",
+      "startDateText": ".Common-Widgets-DaterangePicker:visible [aria-label='Start Date']",
+      "endDateInput": ".Common-Widgets-DaterangePicker:visible [name='return_date']",
+      "endDateText": ".Common-Widgets-DaterangePicker:visible [aria-label='End Date']",
+      "submitButton": ".Common-Widgets-Button.searchButton:visible",
+      "hotels": {
+        "datePattern": "MM/DD/YYYY",
+        "textDatePattern": "ddd M/DD",
+        "submitButton": "[name='searchform'] [type='submit']",
+        "url": "kayak.com/hotels",
+        "locationInput": ".locationField input",
+        "startDateInput": "[name='checkin_date']",
+        "startDateText": "[aria-label='Start Date']",
+        "endDateInput": "[name='checkout_date']",
+        "endDateText": "[aria-label='End Date']",
+        "roomsInput": "[name='AYmi-rooms-input']",
+        "guestsInput": "[name='AYmi-guests-input']"
+      }
     },
     {
       "url": "agoda.com",
@@ -16,7 +33,19 @@
       "pattern": "%from%-%to%/%fromDate%/%toDate%",
       "firstLevelSplitter": "/",
       "secondLevelSplitter": "-",
-      "datePattern": "YYYY-MM-DD"
+      "datePattern": "YYYY-MM-DD",
+      "hotels": {
+        "datePattern": "DD MMM YYYY",
+        "submitButton": "[data-selenium='searchButton']",
+        "url": "agoda.com",
+        "locationInput": ".oneline-text-editor",
+        "startDateInput": ".checkin-input",
+        "startDateText": ".checkin-input",
+        "endDateInput": ".checkout-input",
+        "endDateText": ".checkout-input",
+        "roomsInput": "[name='AYmi-rooms-input']",
+        "guestsInput": "[name='AYmi-guests-input']"
+      }
     },
     {
       "url": "priceline.com",
@@ -25,7 +54,19 @@
       "pattern": "%from%-%to%-%fromDate%/%to%-%from%-%toDate%",
       "firstLevelSplitter": "/",
       "secondLevelSplitter": "-",
-      "datePattern": "YYYYMMDD"
+      "datePattern": "YYYYMMDD",
+      "hotels": {
+        "dataPattern": "MM/DD/YYYY",
+        "submitButton": "#hotels-form [type='submit']",
+        "url": "priceline.com/hotels",
+        "locationInput": "[name='cityName']",
+        "startDateInput": "#hotel-checkin",
+        "startDateText": "#hotel-checkin",
+        "endDateInput": "#hotel-checkout",
+        "endDateText": "#hotel-checkout",
+        "roomsInput": "[name='AYmi-rooms-input']",
+        "guestsInput": "[name='AYmi-guests-input']"
+      }
     }
   ]
 }

@@ -4,7 +4,7 @@ var UrlGenerator = (function() {
   function getCurrentPageUrl() {
     var dfd = $.Deferred();
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {urlRequired: true}, function(url) {
+      chrome.tabs.sendMessage(tabs[0].id, { urlRequired: true }, function(url) {
         if (url) {
           dfd.resolve(url);
         } else {
@@ -29,27 +29,44 @@ var UrlGenerator = (function() {
 
   function generateFlightUrl(flight, currentUrl) {
     var settings = getSettingsForCurrentWebSite(currentUrl);
+
+    if (flight.type === 'hotel') {
+      return '';
+    }
+
     var url = 'https://' + settings.prefix + settings.url + settings.suffix + settings.pattern;
     var dates = flight.dates.map(function (date) {
       if (!date) {
         return '';
       }
-      return moment(date).format(settings.datePattern);
+      return moment(date, 'DD-MM-YYYY').format(settings.datePattern);
     });
     url = url.replace(/%from%/gi, flight.codes[0] || '');
     url = url.replace(/%to%/gi, flight.codes[1] || '');
     url = url.replace(/%fromDate%/gi, dates[0] || '');
     url = url.replace(/%toDate%/gi, dates[1] || '');
+    url = url.replace('-/', '/');
 
     return url;
   }
 
   function generateFlightText(flight) {
-    var dates = flight.dates.map(function (date) {
-      return moment(date).format('DD/MM');
-    });
+    var dates;
+    var codeString;
 
-    var codeString = flight.codes[0] + ' > ' + flight.codes[1];
+    if (flight.type == 'hotel') {
+      console.log('DATES: ', flight.dates);
+      dates = flight.dates.map(function (date) {
+        return moment(date, 'YYYY-MM-DD').format('DD/MM');
+      });
+      codeString = flight.location;
+    } else {
+      dates = flight.dates.map(function (date) {
+        return moment(date).format('DD/MM');
+      });
+      codeString = flight.codes[0] + ' > ' + flight.codes[1];
+    }
+
     var dateString = dates[0] + (dates[1] ? ' - ' + dates[1] : '');
 
     return {
@@ -61,6 +78,7 @@ var UrlGenerator = (function() {
   return {
     generateFlightUrl: generateFlightUrl,
     generateFlightText: generateFlightText,
-    getCurrentPageUrl: getCurrentPageUrl
+    getCurrentPageUrl: getCurrentPageUrl,
+    getSettingsForCurrentWebSite: getSettingsForCurrentWebSite
   }
 }());
