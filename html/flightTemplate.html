@@ -1,0 +1,17 @@
+<div class="row js-flight-container">
+  <div class="col-xs-1 text-center">
+    <i class="fa fa-plane flight-list-icon flight-list-icon-type" aria-hidden="true"></i>
+  </div>
+  <div class="col-xs-6">
+        <span class="js-flight-list-url">
+          {{ codeString }}
+          <br>
+          {{ dateString }}
+        </span>
+  </div>
+  <div class="col-xs-4 text-right">
+    <a href="#" class="glyphicon glyphicon-zoom-in text-muted flight-list-icon js-search-icon" data-type="flights" target="_blank"></a>
+    <span class="glyphicon glyphicon-trash text-muted flight-list-icon js-remove-flight-button" role="button" data-id="{{ id }}"></span>
+  </div>
+</div>
+<hr>

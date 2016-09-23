@@ -2,51 +2,67 @@ var FlightList = (function() {
   'use strict';
 
   var $flightListContainer = $('#js-flight-list-container');
+  var $flightList = $('#js-flight-list');
+  var _flightTemplate;
+  var _hotelTemplate;
 
-  function generateTemplateData(flights, currentUrl) {
-    var templateData = [];
-
+  function generateFlightList(flights, currentUrl) {
+    flights.sort(function (flightA, flightB) {
+      return flightA.searchDate - flightB.searchDate;
+    });
     flights.forEach(function(flight) {
-      var url = UrlGenerator.generateFlightUrl(flight, currentUrl);
-      var text = UrlGenerator.generateFlightText(flight, currentUrl);
-      var flightData;
+      addSearchRow(flight, currentUrl);
+    });
+  }
+  
+  function addSearchRow(flight, currentUrl) {
+    // var url = UrlGenerator.generateFlightUrl(flight, currentUrl);
+    var text = UrlGenerator.generateFlightText(flight, currentUrl);
+    var searchData;
+    var renderedTemplate;
 
-      if (flight.type === 'hotel') {
-        flightData = {
-          id: flight.id,
-          codeString: text.codeString,
-          dateString: text.dateString,
-          location: flight.location,
-          startDate: flight.dates[0],
-          endDate: flight.dates[1],
-          isHotel: flight.isHotel
-        }
-      } else {
-        flightData = {
-          id: flight.id,
-          url: url,
-          codeString: text.codeString,
-          dateString: text.dateString,
-          isHotel: flight.isHotel
-        }
-      }
+    console.log('FLIGHT: ', flight);
+    if (flight.type === 'hotels') {
+      searchData = {
+        id: flight.id,
+        codeString: text.codeString,
+        dateString: text.dateString,
+        location: flight.location,
+        startDate: flight.dates[0],
+        endDate: flight.dates[1],
+        isHotel: true
+      };
+      renderedTemplate = Mustache.render(_hotelTemplate, searchData);
+    } else if (flight.type === 'flights') {
+      searchData = {
+        id: flight.id,
+        // url: url,
+        codeString: text.codeString,
+        dateString: text.dateString,
+        isHotel: flight.isHotel
+      };
+      renderedTemplate = Mustache.render(_flightTemplate, searchData);
+    }
 
-      templateData.push(flightData);
+    var $searchRow = $(renderedTemplate);
+    $searchRow.find('.js-search-icon').on('click', function(event) {
+      event.preventDefault();
+      chrome.runtime.sendMessage({ search:  { data: flight, type: flight.type } }, function(response) {});
     });
 
-    return templateData;
+    $flightList.prepend($searchRow);
   }
   
   function show(flights, currentUrl){
     var dfd = $.Deferred();
-    
-    var templateData = generateTemplateData(flights, currentUrl);
-    $.get('../html/flightsList.html', function(html) {
-      var renderedTemplate = Mustache.render(html, { flights: templateData });
-      $flightListContainer.html(renderedTemplate);
-      dfd.resolve();
+    $.get('../html/flightTemplate.html', function(flightTemplate) {
+      $.get('../html/hotelTemplate.html', function(hotelTemplate) {
+        _flightTemplate = flightTemplate;
+        _hotelTemplate = hotelTemplate;
+        generateFlightList(flights, currentUrl);
+        dfd.resolve();
+      })
     });
-
     return dfd.promise();
   }
 
@@ -69,6 +85,13 @@ var FlightList = (function() {
         Loader.hide();
       });
     });
+  });
+
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.addSearchRow) {
+      console.log('ADD!!!, ', request.addSearchRow);
+      addSearchRow(request.addSearchRow.search, request.addSearchRow.currentUrl);
+    }
   });
 
   return {

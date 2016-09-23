@@ -30,7 +30,7 @@ var UrlGenerator = (function() {
   function generateFlightUrl(flight, currentUrl) {
     var settings = getSettingsForCurrentWebSite(currentUrl);
 
-    if (flight.type === 'hotel') {
+    if (flight.type === 'hotels') {
       return '';
     }
 
@@ -54,15 +54,15 @@ var UrlGenerator = (function() {
     var dates;
     var codeString;
 
-    if (flight.type == 'hotel') {
+    if (flight.type === 'hotels') {
       console.log('DATES: ', flight.dates);
       dates = flight.dates.map(function (date) {
-        return moment(date, 'YYYY-MM-DD').format('DD/MM');
+        return moment(date, 'DD-MM-YYYY').format('DD/MM');
       });
       codeString = flight.location;
-    } else {
+    } else if (flight.type === 'flights') {
       dates = flight.dates.map(function (date) {
-        return moment(date).format('DD/MM');
+        return moment(date, 'DD-MM-YYYY').format('DD/MM');
       });
       codeString = flight.codes[0] + ' > ' + flight.codes[1];
     }

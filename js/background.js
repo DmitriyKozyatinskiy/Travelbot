@@ -3,7 +3,49 @@
 
   window._settings = null;
   var _possibleUrls = [];
+  
+  function search(data, type) {
+    console.log('DATA: ', data);
+    console.log('TYPE: ', type);
 
+    var dfd = $.Deferred();
+
+    UrlGenerator.getCurrentPageUrl().done(function(currentUrl) {
+      saveFlight(data, currentUrl);
+
+      var settings = null;
+      if (type == 'flights') {
+        settings = UrlGenerator.getSettingsForCurrentWebSite(currentUrl);
+      } else if (type == 'hotels') {
+        settings = UrlGenerator.getSettingsForCurrentWebSite(currentUrl).hotels;
+      }
+      var searchUrl = settings.searchUrl;
+
+      chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { searchUrl: 'https://' + searchUrl, data: data }, function() {
+          var loadInterval = window.setInterval(function() {
+            chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+              chrome.tabs.sendMessage(tabs[0].id, { urlRequired: true }, function(url) {
+                if (url.search(searchUrl) !== -1) {
+                  window.clearInterval(loadInterval);
+                  window.setTimeout(function() {
+                    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                      chrome.tabs.sendMessage(tabs[0].id, { fillForm: { settings: settings, data: data } }, function() {
+                        dfd.resolve();
+                      });
+                    });
+                  }, 1000);
+                }
+              });
+            });
+          }, 1000);
+        });
+      });
+    });
+
+    return dfd.promise();
+  }
+  
   function getSettings() {
     var dfd = $.Deferred();
 
@@ -15,38 +57,12 @@
   }
 
   function captureRequest(request) {
-    var matchedUrl = matchRequestUrl(request.url, _possibleUrls);
-
-    if (!matchedUrl) {
-      return;
-    }
-
-    var data = request.url.split(matchedUrl.suffix)[1];
-
-    if (!data) {
-      return;
-    }
-
-    data = data.split('?')[0];
-
-    var dates = getDates(data, matchedUrl);
-    dates.forEach(function(date) {
-      data = data.replace(date);
-    });
-
-    var IATACodes = getIATA(data, matchedUrl);
-
-    if (!IATACodes.length || !dates.length) {
-      return;
-    }
-
     var flightData = {
       dates: dates,
       codes: IATACodes,
       saveDate: new Date(),
-      type: 'flight'
+      type: 'flights'
     };
-
     saveFlight(flightData);
   }
 
@@ -61,7 +77,7 @@
     return dfd.promise();
   }
 
-  function saveFlight(flightData) {
+  function saveFlight(flightData, currentUrl) {
     var dfd = $.Deferred();
     var sameFlightIndex = -1;
 
@@ -76,7 +92,7 @@
         maxId = 1;
       }
 
-      if (flightData.type == 'hotel') {
+      if (flightData.type === 'hotels') {
         sameFlightIndex = checkIfHotelAlreadyExists(flightData, flights);
       } else {
         sameFlightIndex = checkIfAlreadyExists(flightData, flights);
@@ -88,6 +104,7 @@
       } else {
         flightData.id = maxId + 1;
         flights.push(flightData);
+        chrome.runtime.sendMessage({ addSearchRow: { search: flightData, currentUrl: currentUrl } }, function(response) {});
       }
 
       flightData.searchDate = new Date().getTime();
@@ -149,49 +166,10 @@
 
     return existingIndex;
   }
-
-  function getIATA(data, matchedUrl) {
-    data = data.split(matchedUrl.firstLevelSplitter);
-    data = _.without(data, '', undefined, "undefined");
-    data = data.join(matchedUrl.secondLevelSplitter);
-    data = data.split(matchedUrl.secondLevelSplitter);
-    data = _.without(data, '', undefined, "undefined");
-    data = _.uniq(data);
-    _.remove(data, function(item) {
-      return item.length !== 3;
-    });
-
-    return data;
-  }
-
-  function getDates(dataString, matchedUrl) {
-    var dates = [];
-    var data = dataString.split(matchedUrl.firstLevelSplitter);
-    data.forEach(function (dataPart) {
-      var date = moment(dataPart, matchedUrl.datePattern).format('YYYY-MM-DD');
-      if (date !== 'Invalid date') {
-        dates.push(date);
-      }
-    });
-
-    if (!dates.length) {
-      data = dataString.split(matchedUrl.secondLevelSplitter);
-      data.forEach(function (dataPart) {
-        var date = moment(dataPart, matchedUrl.datePattern).format('YYYY-MM-DD');
-        if (date !== 'Invalid date') {
-          dates.push(date);
-        }
-      });
-    }
-
-    dates = _.uniq(dates);
-    _.remove(dates, function(date) {
-      var yesterdayDate = new Date(moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD'));
-      return new Date(date) <= yesterdayDate;
-    });
-
-    return dates.sort(function (dateA, dateB) {
-      return new Date(dateA) - new Date(dateB);
+  
+  function convertDates(dates, settings) {
+    return dates.map(function(date) {
+      return moment(date, settings.datePattern).format('DD-MM-YYYY');
     });
   }
 
@@ -218,12 +196,7 @@
   getSettings().done(function (settings) {
     window._settings = settings;
     _possibleUrls = settings.urls;
-
-    chrome.webRequest.onBeforeRequest.addListener(captureRequest, {
-      urls: ['<all_urls>'],
-      types: ['main_frame']
-    }, ['blocking', 'requestBody']);
-
+    
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       if (request.requestFlights) {
         getData().done(function (flights) {
@@ -241,14 +214,15 @@
         sendResponse(siteName.url || 'Search');
       } else if (request.requestLastSearch) {
         getData().done(function (flights) {
+          console.log('FLIGHTS: ', flights);
           var lastFlightSearch = _.maxBy(_.filter(flights, function(flight) {
-            return flight.type === 'flight'
+            return flight.type === 'flights'
           }), function(flight) {
             return flight.searchDate;
           });
 
           var lastHotelSearch = _.maxBy(_.filter(flights, function(flight) {
-            return flight.type === 'hotel'
+            return flight.type === 'hotels'
           }), function(flight) {
             return flight.searchDate;
           });
@@ -265,27 +239,29 @@
   });
 
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(request);
     if (request.getTemplate) {
       $.get('../html/toolbar.html', function(response) {
         sendResponse(response);
       });
-    } else if (request.url) {
-      console.log('URL: ', searchUrl);
-
-      if (request.data.type === 'hotels') {
-        Search.searchHotels(false, request.data);
-        request.data.type = 'hotel';
-        saveFlight(request.data);
-      } else {
-        var searchUrl = UrlGenerator.generateFlightUrl(request.data, request.url);
-        sendResponse(searchUrl);
-      }
-    } else if (request.saveHotelSearch) {
-      saveFlight(request.saveHotelSearch).done(function() {
-        sendResponse(true);
-      });
+    } else if (request.saveSearch) {
+      saveFlight(request.saveSearch);
+    } else if (request.search) {
+      search(request.search.data, request.search.type);
     }
+    // else if (request.url) {
+    //   if (request.data.type === 'hotels') {
+    //     Search.searchHotels(false, request.data);
+    //     request.data.type = 'hotel';
+    //     saveFlight(request.data);
+    //   } else {
+    //     var searchUrl = UrlGenerator.generateFlightUrl(request.data, request.url);
+    //     sendResponse(searchUrl);
+    //   }
+    // } else if (request.saveHotelSearch) {
+    //   saveFlight(request.saveHotelSearch).done(function() {
+    //     sendResponse(true);
+    //   });
+    // }
     return true;
   });
 }());

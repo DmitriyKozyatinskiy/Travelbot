@@ -24,7 +24,6 @@
   }
 
   function setToolbar(template, options) {
-    console.log('HELLOkogLDSKJLKS', options);
     $('body').prepend($(template));
     $('#fl-submit').val('Search on ' + location.host);
     window.setTimeout(function() {
@@ -46,10 +45,10 @@
         $('#fl-from').val(options.lastSearch[0].codes[0]);
         $('#fl-to').val(options.lastSearch[0].codes[1]);
         if (options.lastSearch[0].dates[0]) {
-          $fromDate.val(moment(options.lastSearch[0].dates[0], 'YYYY-MM-DD').format('DD-MM-YYYY'));
+          $fromDate.val(options.lastSearch[0].dates[0]);
         }
         if (options.lastSearch[0].dates[1]) {
-          $toDate.val(moment(options.lastSearch[0].dates[1], 'YYYY-MM-DD').format('DD-MM-YYYY'));
+          $toDate.val(options.lastSearch[0].dates[1]);
         }
       }
 
@@ -66,50 +65,13 @@
         });
         $('#fl-location').val(options.lastSearch[1].location);
         if (options.lastSearch[1].dates[0]) {
-          $fromDate.val(moment(options.lastSearch[1].dates[0], 'YYYY-MM-DD').format('DD-MM-YYYY'));
+          $fromDate.val(options.lastSearch[1].dates[0]);
         }
         if (options.lastSearch[1].dates[1]) {
-          $toDate.val(moment(options.lastSearch[1].dates[1], 'YYYY-MM-DD').format('DD-MM-YYYY'));
+          $toDate.val(options.lastSearch[1].dates[0]);
         }
       }
     }, 1000);
-  }
-
-  function setAirportCodesAutocomplition() {
-    $('.fl-airport-picker').autocomplete({
-      source: function(request, response) {
-        $.ajax({
-          url: 'https://www.air-port-codes.com/search',
-          jsonp: 'callback',
-          dataType: 'json',
-          data: {
-            term: request.term,
-            limit: 7,
-            size: 1,
-            key: 'f262d5eb6e',
-            secret: '86ba46b8f9b37c6'
-          }
-        }).done(function(data) {
-          console.log(data);
-          if (data.status) {
-            response( $.map( data.airports, function( item ) {
-              return {
-                label: item.name + ' (' + item.iata + ')',
-                value: item.iata,
-                code: item.iata
-              }
-            }));
-          } else {
-            response();
-          }
-        });
-      },
-      select: function(event, ui) {
-        var $input = $(this);
-        $input.attr('data-value', ui.item.code);
-        $input.val(ui.item.value);
-      }
-    });
   }
   
   function search() {
@@ -118,8 +80,7 @@
     var dates;
     var data;
 
-    if (currentType === 'hotel') {
-      console.log('HOTEL!!!');
+    if (currentType === 'hotels') {
       var searchLocation = $('#fl-location').val();
       dates = [
         $('#fl-hotel-from-date').val(),
@@ -130,8 +91,7 @@
         dates: dates,
         type: 'hotels'
       };
-    } else {
-      console.log('FLIGHT!');
+    } else if (currentType === 'flights') {
       var codes = [$('#fl-from').val(), $('#fl-to').val()];
       dates = [
         $('#fl-from-date').val(),
@@ -144,11 +104,13 @@
       };
     }
 
-    chrome.runtime.sendMessage({ url: location.href, data: data }, function(response) {
-      if (response) {
-        location.href = response;
-      }
-    });
+    chrome.runtime.sendMessage({ search:  { data: data, type: currentType } }, function(response) {});
+
+    // chrome.runtime.sendMessage({ url: location.href, data: data }, function(response) {
+    //   if (response) {
+    //     location.href = response;
+    //   }
+    // });
 
     return dfd.promise();
   }
@@ -157,21 +119,15 @@
     var location = $(_currentSettings.hotels.locationInput).val();
     var startDate = $(_currentSettings.hotels.startDateInput).val();
     var endDate = $(_currentSettings.hotels.endDateInput).val();
-    console.log('Start: ', startDate);
-    console.log('End: ', endDate);
-    console.log('Pattern: ', _currentSettings.hotels.datePattern);
 
-    startDate = moment(startDate, _currentSettings.hotels.datePattern).format('YYYY-MM-DD');
-    endDate = moment(endDate, _currentSettings.hotels.datePattern).format('YYYY-MM-DD');
-
-    console.log('Start: ', startDate);
-    console.log('End: ', endDate);
-
+    startDate = moment(startDate, _currentSettings.hotels.datePattern).format('DD-MM-YYYY');
+    endDate = moment(endDate, _currentSettings.hotels.datePattern).format('DD-MM-YYYY');
+    
     return {
       location: location,
       dates: [startDate, endDate],
       saveDate: new Date(),
-      type: 'hotel',
+      type: 'hotels',
       isHotel: true
     }
   }
@@ -185,23 +141,26 @@
       getToolbarTemplate().done(function(template) {
         getLastSearch().done(function(options) {
           _currentSettings = options.settings;
-          $(document).on('click', _currentSettings.hotels.submitButton, function() {
-            var hotelData = getHotelSearchData();
-
-            chrome.runtime.sendMessage({ saveHotelSearch: hotelData }, function(response) {});
+          $(document).on('click', _currentSettings.submitButton, function() {
+            var data = FormDataProvider.getFlightSearchData(_currentSettings);
+            chrome.runtime.sendMessage({ saveSearch: data }, function(response) {});
+          }).on('click', _currentSettings.hotels.submitButton, function() {
+            var data = FormDataProvider.getHotelSearchData(_currentSettings);
+            chrome.runtime.sendMessage({ saveSearch: data }, function(response) {});
           });
 
+          console.log('OPTIONS: ', options);
           if (!options.lastSearch[0] && !options.lastSearch[1]) {
             return;
           }
           setToolbar(template, options);
-          setAirportCodesAutocomplition();
 
           $('#fl-submit-button').html(response);
         });
       });
 
       $(document).on('submit', '#fl-toolbar-form', function(event) {
+        console.log('search');
         event.preventDefault();
         search();
       }).on('change', '.fl-airport-picker', function() {
@@ -211,7 +170,7 @@
       }).on('change', '#fl-type-select', function() {
         var currentType = $(this).val();
 
-        if (currentType === 'hotel') {
+        if (currentType === 'hotels') {
           $('#fl-flight-container').addClass('hidden');
           $('#fl-hotel-container').removeClass('hidden');
         } else {
