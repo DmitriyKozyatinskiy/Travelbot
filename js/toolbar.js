@@ -24,9 +24,9 @@
   }
 
   function setToolbar(template, options) {
-    $('body').prepend($(template));
-    $('#fl-submit').val('Search on ' + location.host);
     window.setTimeout(function() {
+      $('body').prepend($(template));
+      $('#fl-submit').val('Search on ' + location.host);
       $('#pcln-global-header').css('position', 'relative');
       var $fromDate;
       var $toDate;
@@ -71,6 +71,8 @@
           $toDate.val(options.lastSearch[1].dates[0]);
         }
       }
+
+      $('#global_header_wrapper').css('position', 'relative');
     }, 1000);
   }
   
@@ -138,6 +140,9 @@
     }
 
     chrome.runtime.sendMessage({ getCurrentSiteName: location.href }, function(response) {
+      if (!response) {
+        return;
+      }
       getToolbarTemplate().done(function(template) {
         getLastSearch().done(function(options) {
           _currentSettings = options.settings;

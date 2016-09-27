@@ -25,8 +25,15 @@ var FormFiller = (function() {
       if (data.type === 'flights') {
         $(settings.fromInput).val(data.codes[0]);
         $(settings.toInput).val(data.codes[1]);
+        if (settings.fromText) {
+          $(settings.fromText).html(data.codes[0]);
+          $(settings.toText).html(data.codes[1]);
+        }
       } else if (data.type === 'hotels') {
         $(settings.locationInput).val(data.location);
+        if (settings.locationText) {
+          $(settings.locationText).html(data.location);
+        }
       }
 
       startDateInput.removeClass('flightsStartDate');
@@ -46,10 +53,14 @@ var FormFiller = (function() {
       }
 
       // refreshDates(settings);
+
+
       window.setTimeout(function () {
-        console.log('TAB: ', $tab);
-        $tab.trigger('click');
+        if ($tab) {
+          $tab.trigger('click');
+        }
       }, 1000);
+
       window.clearInterval(interval);
     }
   }

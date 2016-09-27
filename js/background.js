@@ -180,7 +180,7 @@
         return possibleUrls[i];
       }
     }
-    return false;
+    return {};
   }
 
   function getPossibleUrlsArray(settings) {
@@ -210,8 +210,8 @@
           sendResponse(request.removeFlightById);
         });
       } else if (request.getCurrentSiteName) {
-        var siteName = matchRequestUrl(request.getCurrentSiteName, _possibleUrls);
-        sendResponse(siteName.url || 'Search');
+        var siteName = matchRequestUrl(request.getCurrentSiteName, _possibleUrls).url || false;
+        sendResponse(siteName);
       } else if (request.requestLastSearch) {
         getData().done(function (flights) {
           console.log('FLIGHTS: ', flights);

@@ -18,6 +18,7 @@
     },
     {
       "matches": [
+        "<all_urls>",
         "*://www.kayak.com/*",
         "*://www.priceline.com/*",
         "*://*.agoda.com/*",
@@ -25,7 +26,20 @@
         "*://www.tripadvisor.com/*",
         "*://www.expedia.com/*",
         "*://*.hotels.com/*",
-        "*://www.aa.com/*"
+        "*://www.aa.com/*",
+        "*://www.delta.com/*",
+        "*://www.united.com/*",
+        "*://www.marriott.com/*",
+        "*://*.hilton.com/*",
+        "*://www.vrbo.com/*",
+        "*://www.homeaway.com/*",
+        "*://www.orbitz.com/*",
+        "*://www.ana.co.jp.com/*",
+        "*://www.travelocity.com/*",
+        "*://*.easyjet.com/*",
+        "*://www.emirates.com/*",
+        "*://www.lonelyplanet.com/*",
+        "*://www.hotwire.com/*"
       ],
       "js": [ "js/libs/jquery.js", "js/libs/jquery-ui.js", "js/libs/moment.js", "js/formDataProvider.js", "js/formFiller.js", "js/toolbar.js" ],
       "css": [ "css/jquery-ui.css", "css/toolbar.css" ],
